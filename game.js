@@ -17,8 +17,9 @@ const H = canvas.height;
 const GRAVITY = 1700;
 const JUMP_V = 780;                 // velocidad de rebote
 const MAX_JUMP_H = (JUMP_V * JUMP_V) / (2 * GRAVITY); // ≈179px alcanzables
-const PAD_GAP_MIN = 70;
-const PAD_GAP_MAX = 150;            // siempre < MAX_JUMP_H, con margen
+const PAD_GAP_MIN = 55;
+const PAD_GAP_MAX = 115;            // más denso, con buen margen bajo MAX_JUMP_H
+const COMPANION_CHANCE = 0.28;      // probabilidad de un 2º nenúfar en el mismo nivel
 const FROG_SPEED = 340;
 const FOLLOW_LINE = H * 0.38;       // altura de pantalla donde "vive" la cámara
 
@@ -66,8 +67,9 @@ function reset() {
   ];
   let topY = H - 40;
   while (topY > -H) {
-    topY -= randRange(PAD_GAP_MIN, PAD_GAP_MAX - 30);
+    topY -= randRange(PAD_GAP_MIN, PAD_GAP_MAX - 20);
     pads.push(makePad(topY));
+    if (Math.random() < COMPANION_CHANCE) pads.push(makeCompanionPad(topY));
   }
 
   condors = [];
@@ -79,12 +81,23 @@ function reset() {
 
 function makePad(y) {
   const r = randRange(26, 42);
-  const moving = Math.random() < Math.min(0.35, 0.08 + difficulty * 0.03);
+  const moving = Math.random() < Math.min(0.22, 0.06 + difficulty * 0.02);
   return {
     x: randRange(r + 10, W - r - 10),
     y, r, start: false,
     moving,
-    vx: moving ? (Math.random() < 0.5 ? -1 : 1) * randRange(50, 90 + difficulty * 8) : 0
+    vx: moving ? (Math.random() < 0.5 ? -1 : 1) * randRange(50, 80 + difficulty * 6) : 0
+  };
+}
+
+// Un segundo nenúfar (fijo) en el mismo nivel para dar más opciones de
+// aterrizaje sin bajar la dificultad general del salto.
+function makeCompanionPad(y) {
+  const r = randRange(24, 36);
+  return {
+    x: randRange(r + 10, W - r - 10),
+    y: y + randRange(-14, 14),
+    r, start: false, moving: false, vx: 0
   };
 }
 
@@ -179,12 +192,22 @@ function update(dt) {
   camY = Math.min(camY, frog.y - FOLLOW_LINE);
 
   // --- reciclar nenúfares que quedaron fuera de pantalla por abajo ---
+  const extras = [];
   for (const p of pads) {
     const screenY = p.y - camY;
     if (screenY > H + 70) {
       const ny = topPadY() - randRange(PAD_GAP_MIN, PAD_GAP_MAX);
       Object.assign(p, makePad(ny));
+      if (Math.random() < COMPANION_CHANCE) extras.push(makeCompanionPad(ny));
     }
+  }
+  if (extras.length) pads.push(...extras);
+
+  // Límite de seguridad: si por algún motivo el arreglo crece demasiado
+  // (p.ej. muchos nenúfares acompañantes seguidos), recorta los más lejanos.
+  if (pads.length > 40) {
+    pads.sort((a, b) => a.y - b.y);
+    pads = pads.slice(0, 40);
   }
 
   // --- cóndores ---
