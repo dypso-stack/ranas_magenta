@@ -52,8 +52,13 @@ h1 {
   opacity: .72;
 }
 
+.scores {
+  display: flex;
+  gap: 10px;
+}
+
 .score-box {
-  min-width: 105px;
+  min-width: 88px;
   padding: 12px 16px;
   background: #fff;
   border-radius: 18px;
@@ -70,7 +75,7 @@ h1 {
 }
 
 .score-box strong {
-  font-size: 34px;
+  font-size: 30px;
 }
 
 .game-card {
@@ -121,7 +126,7 @@ button:hover { transform: translateY(-1px); background: var(--magenta-dark); }
 }
 
 @media (max-width: 650px) {
-  header { align-items: center; }
+  header { align-items: center; flex-direction: column; }
   .subtitle { display: none; }
   .controls { flex-direction: column; }
 }

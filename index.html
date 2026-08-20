@@ -12,11 +12,17 @@
       <div>
         <p class="eyebrow">MINI GAME</p>
         <h1>Ranas Magenta</h1>
-        <p class="subtitle">Salta sobre los nenúfares y consigue la mayor puntuación.</p>
+        <p class="subtitle">Sube rebotando de nenúfar en nenúfar y esquiva o salta a los cóndores.</p>
       </div>
-      <div class="score-box">
-        <span>PUNTOS</span>
-        <strong id="score">0</strong>
+      <div class="scores">
+        <div class="score-box">
+          <span>PUNTOS</span>
+          <strong id="score">0</strong>
+        </div>
+        <div class="score-box">
+          <span>RÉCORD</span>
+          <strong id="best">0</strong>
+        </div>
       </div>
     </header>
 
@@ -24,7 +30,7 @@
       <canvas id="game" width="900" height="520" aria-label="Juego de ranas magenta"></canvas>
       <div class="controls">
         <button id="startBtn">Jugar</button>
-        <span>← → para moverte · ESPACIO para saltar · R para reiniciar</span>
+        <span>← → o A/D para moverte (la rana rebota sola) · Cóndores: esquívalos o pásalos por encima para bono · R reinicia</span>
       </div>
     </section>
 
